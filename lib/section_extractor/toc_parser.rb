@@ -109,15 +109,15 @@ module SectionExtractor
     end
 
     def detect_numeric_series_separator_chars(item)
-      item.title.match(/\d{1,3}([^\s]+)\s/)&.dig(1)
+      item.title.match(/\d{1,3}([^\s]+)\s/) ? $1 : nil
     end
 
     def detect_roman_series_separator_chars(item)
-      item.title.match(/\b(IX|IV|V|VI|I|II|III)\b([^\s]+)\s/)&.dig(2)
+      item.title.match(/\b(IX|IV|V|VI|I|II|III)\b([^\s]+)\s/) ? $2 : nil
     end
 
     def detect_alpha_series_separator_chars(item)
-      item.title.match(/([a-z])([^\s]+)\s/)&.dig(2)
+      item.title.match(/([a-z])([^\s]+)\s/) ? $2 : nil
     end
 
     def expected_next_series_item(current_item)
