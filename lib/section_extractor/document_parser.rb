@@ -2,15 +2,14 @@
 
 module SectionExtractor
   class DocumentParser
-    attr_reader :file_path
+    attr_reader :content
 
-    def initialize(file_path)
-      @file_path = file_path
+    def initialize(content)
+      @content = content
     end
 
     def call
-      Document.new(file_path).tap do |document|
-        content = File.read(file_path)
+      Document.new.tap do |document|
         document.tocs = extract_tocs(content)
         document.sections = extract_sections(content, document.tocs)
       end
