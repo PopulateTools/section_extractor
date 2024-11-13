@@ -141,7 +141,7 @@ module SectionExtractor
                          else
                            raise "series type not detected"
                          end
-      separators_chars.sort.uniq.compact
+      separators_chars.compact.uniq
     end
 
     def detect_numeric_series_separator_chars(item)
