@@ -2,8 +2,8 @@
 
 module SectionExtractor
   class TocParser
-    ROMAN_SERIES = %w(I II III IV V VI VII VIII IX X XI XII XIII XIV XV)
-    ALPHA_SERIES = ('a'..'z').to_a
+    ROMAN_SERIES = %w[I II III IV V VI VII VIII IX X XI XII XIII XIV XV].freeze
+    ALPHA_SERIES = ("a".."z").to_a
 
     attr_reader :content
 
