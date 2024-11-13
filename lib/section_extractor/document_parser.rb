@@ -35,10 +35,8 @@ module SectionExtractor
         end
 
         puts "- Skipping #{toc_items_to_skip.join(", ")} empty sections" if toc_items_to_skip.any?
-
         toc_items_to_skip.each { |index| toc.toc_items.delete_at(index) }
       end
-
       sections
     end
 
