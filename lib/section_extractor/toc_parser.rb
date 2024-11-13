@@ -15,7 +15,7 @@ module SectionExtractor
       tocs = []
       re1 = %r{\n(\d{1,3}[\.-][\.-]?\s+[^\n]+)\n}mi
       re2 = %r{\n(IX|IV|V|VI|I|II|III)([\.-]*\s+[^\n]+)\n}m
-      re3 = %r{\n^([a-z][\)\.-]+\s+[^\n]+)\n}m
+      re3 = %r{\n^([a-zA-Z][\)\.-]+\s+[^\n]+)\n}m
 
       [re1, re2, re3].map do |re|
         toc = Toc.new
@@ -120,7 +120,7 @@ module SectionExtractor
         :numeric
       when /\A\b(I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|IVX|XV)+\b/
         :roman
-      when /\A[a-z]+/
+      when /\A[a-zA-Z]+/
         :alpha
       end
     end
@@ -133,8 +133,10 @@ module SectionExtractor
                            toc.toc_items.map { |item| detect_roman_series_separator_chars(item) }
                          when :alpha
                            toc.toc_items.map { |item| detect_alpha_series_separator_chars(item) }
+                         else
+                           raise "series type not detected"
                          end
-      separators_chars.sort.uniq
+      separators_chars.sort.uniq.compact
     end
 
     def detect_numeric_series_separator_chars(item)
@@ -146,7 +148,7 @@ module SectionExtractor
     end
 
     def detect_alpha_series_separator_chars(item)
-      item.title.match(/([a-z])([^\s]+)\s/) ? $2 : nil
+      item.title.match(/([a-zA-Z])([^\s]+)\s/) ? $2 : nil
     end
 
     def expected_next_series_item(current_item)
