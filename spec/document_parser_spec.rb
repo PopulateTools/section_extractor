@@ -57,4 +57,21 @@ RSpec.describe SectionExtractor::DocumentParser do
       end
     end
   end
+
+  context "in 58142076 doc" do
+    let(:file_path) { "spec/files/58142076.txt" }
+
+    it "has these sections" do
+      [
+        ["19.1 GARANTÍA DEFINITIVA", "20.747,79 euros."],
+        ["17. CRITERIOS DE VALORACIÓN DE LAS OFERTAS", "Justificación: se ha seleccionado como criterio de adjudicación"],
+        ["14. CONDICIONES ESPECIALES DE EJECUCIÓN", "Condiciones especiales de ejecución del contrato de carácter medioambiental."]
+      ].each do |expected_section|
+        expect(document.sections.any? do |section|
+          section.raw_title.include?(expected_section[0]) &&
+            section.content.include?(expected_section[1])
+        end).to be(true), lambda { "Expected section '#{expected_section[0]}' OR #{expected_section[1]} to be present" }
+      end
+    end
+  end
 end

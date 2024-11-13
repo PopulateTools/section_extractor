@@ -16,7 +16,7 @@ module SectionExtractor
       re1 = %r{\n(\d{1,3}[\.-][\.-]?\s+[^\n]+)\n}mi
       re2 = %r{\n((IX|IV|V|VI|I|II|III)([\.-]*\s+[^\n]+))\n}m
       re3 = %r{\n^([a-zA-Z][\)\.-]+\s+[^\n]+)\n}m
-      re4 = %r{^(\d+[\.\d+]*\.\s.*)}
+      re4 = %r{^(\d+[\.\d+]*\.?\s.*)}
       re5 = %r{\n(ANEXO\s(IX|IV|V|VI|I|II|III)[\.-]*\s+[^\n]+)\n}mi
 
       [re1, re2, re3, re4, re5].map do |re|
@@ -32,7 +32,7 @@ module SectionExtractor
           toc.add_item(toc_item_title, content.rindex(match.first))
         end
 
-        tocs << toc
+        tocs << toc if toc.toc_items.any?
       end
 
       analyze_and_close(tocs)
@@ -64,6 +64,8 @@ module SectionExtractor
       toc_separator_chars.sort_by(&:size).reverse.each do |separator_char|
         new_toc = Toc.new
         new_toc.toc_separator_chars = separator_char
+        next if new_toc.toc_separator_chars.size == 0
+
         new_toc.toc_series_type = toc.toc_series_type
         toc.toc_items.each do |item|
           new_toc.add_item(item.title, item.position) if item.title.include?(separator_char)
@@ -80,7 +82,7 @@ module SectionExtractor
 
     def calculate_titles(toc)
       toc.toc_items.each do |item|
-        item.title = item.raw_title.split(toc.toc_separator_chars).last.strip
+        item.title = item.raw_title.split(toc.toc_separator_chars).last&.strip
         if item.title == item.raw_title
           toc.toc_items.delete(item)
         end
@@ -127,6 +129,8 @@ module SectionExtractor
         :roman
       when /\A[a-zA-Z]+/
         :alpha
+      else
+        raise "series type not detected from title #{item.title}"
       end
     end
 
