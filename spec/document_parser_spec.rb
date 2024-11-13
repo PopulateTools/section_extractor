@@ -12,12 +12,13 @@ RSpec.describe SectionExtractor::DocumentParser do
       [
         ["12.- Criterios de adjudicación i ponderación", "Los criterios de adjudicación son los que figuran"],
         ["c) CPV", "44230000-1 Trabajos de carpintería para la"],
-        ["I.-  Régimen Jurídico del Contrato.", "La Entidad contratante es la empresa pública EMAYA"]
+        ["I.-  Régimen Jurídico del Contrato.", "La Entidad contratante es la empresa pública EMAYA"],
+        ["I. CARACTERÍSTICAS DEL CONTRATO", "a) Objeto:"]
       ].each do |expected_section|
         expect(document.sections.any? do |section|
           section.raw_title.include?(expected_section[0]) &&
             section.content.include?(expected_section[1])
-        end).to be true
+        end).to be(true), lambda { "Expected section '#{expected_section[0]}' OR #{expected_section[1]} to be present" }
       end
     end
   end

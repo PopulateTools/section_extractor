@@ -30,19 +30,48 @@ module SectionExtractor
         tocs << toc
       end
 
-      tocs.each { |toc| analyze_and_close(toc) }
-      tocs
+      analyze_and_close(tocs)
     end
 
-    def analyze_and_close(toc)
-      detect_series_type(toc)
-      detect_separator_chars(toc)
-      calculate_titles(toc)
-      #TODO
-      #cleanup_toc_items(toc)
+    def analyze_and_close(tocs)
+      tocs.map do |toc|
+        toc.toc_series_type = detect_series_type(toc)
+        toc_separator_chars = detect_separator_chars(toc)
+        if toc_separator_chars.size > 1
+          extract_tocs_with_different_separators(toc, toc_separator_chars)
+        else
+          toc.toc_separator_chars = toc_separator_chars.first
+          toc
+        end
+      end.flatten.map do |toc|
+        calculate_titles(toc)
+        # TODO, for the moment is not necessary
+        #cleanup_toc_items(toc)
+
+        toc
+      end
     end
 
     private
+
+    def extract_tocs_with_different_separators(toc, toc_separator_chars)
+      tocs = []
+      toc_separator_chars.sort_by(&:size).reverse.each do |separator_char|
+        new_toc = Toc.new
+        new_toc.toc_separator_chars = separator_char
+        new_toc.toc_series_type = toc.toc_series_type
+        toc.toc_items.each do |item|
+          new_toc.add_item(item.title, item.position) if item.title.include?(separator_char)
+        end
+
+        # Delete the items from the original TOC
+        new_toc.toc_items.each do |new_item|
+          toc.toc_items.delete_if { |item| item.title == new_item.title }
+        end
+        tocs << new_toc
+      end
+      tocs
+    end
 
     def calculate_titles(toc)
       toc.toc_items.each do |item|
@@ -57,7 +86,7 @@ module SectionExtractor
       random_items = toc.toc_items.sample(5)
       types = random_items.map{ |item| detect_series_type_from_item(item) }
       # return the most common type
-      toc.toc_series_type = types.max_by { |type| types.count(type) }
+      types.max_by { |type| types.count(type) }
     end
 
     def cleanup_toc_items(toc)
@@ -105,7 +134,7 @@ module SectionExtractor
                          when :alpha
                            toc.toc_items.map { |item| detect_alpha_series_separator_chars(item) }
                          end
-      toc.toc_separator_chars = separators_chars.max_by { |separator_char| separators_chars.count(separator_char) }
+      separators_chars.sort.uniq
     end
 
     def detect_numeric_series_separator_chars(item)
