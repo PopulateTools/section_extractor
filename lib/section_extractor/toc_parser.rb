@@ -14,17 +14,22 @@ module SectionExtractor
     def call
       tocs = []
       re1 = %r{\n(\d{1,3}[\.-][\.-]?\s+[^\n]+)\n}mi
-      re2 = %r{\n(IX|IV|V|VI|I|II|III)([\.-]*\s+[^\n]+)\n}m
+      re2 = %r{\n((IX|IV|V|VI|I|II|III)([\.-]*\s+[^\n]+))\n}m
       re3 = %r{\n^([a-zA-Z][\)\.-]+\s+[^\n]+)\n}m
+      re4 = %r{^(\d+[\.\d+]*\.\s.*)}
+      re5 = %r{\n(ANEXO\s(IX|IV|V|VI|I|II|III)[\.-]*\s+[^\n]+)\n}mi
 
-      [re1, re2, re3].map do |re|
+      [re1, re2, re3, re4, re5].map do |re|
         toc = Toc.new
-        content.scan(re).map do |match|
-          toc_item_title = match.join("").strip
+        content.scan(re).each do |match|
+          toc_item_title = match.first.strip.gsub(/\n/, "").gsub(/\s+/, " ")
+          # Skip the TOC item if it has more than 5 dots
+          next if toc_item_title.include?(".....")
+
           if toc_item_title.include?(":")
             toc_item_title = toc_item_title.split(":").first.strip
           end
-          toc.add_item(toc_item_title, content.index(toc_item_title))
+          toc.add_item(toc_item_title, content.rindex(match.first))
         end
 
         tocs << toc
