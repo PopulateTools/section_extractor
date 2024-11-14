@@ -13,11 +13,11 @@ module SectionExtractor
 
     def call
       tocs = []
-      re1 = %r{\n(\d{1,3}[\.-][\.-]?\s+[^\n]+)\n}mi
-      re2 = %r{\n((IX|IV|V|VI|I|II|III)([\.-]*\s+[^\n]+))\n}m
-      re3 = %r{\n^([a-zA-Z][\)\.-]+\s+[^\n]+)\n}m
-      re4 = %r{^(\d+[\.\d+]*\.?\s.*)}
-      re5 = %r{\n(ANEXO\s(IX|IV|V|VI|I|II|III)[\.-]*\s+[^\n]+)\n}mi
+      re1 = /\n(\d{1,3}[.-][.-]?\s+[^\n]+)\n/mi
+      re2 = /\n((IX|IV|V|VI|I|II|III)([.-]*\s+[^\n]+))\n/m
+      re3 = /\n^([a-zA-Z][).-]+\s+[^\n]+)\n/m
+      re4 = /^(\d+[.\d+]*\.?\s.*)/
+      re5 = /\n(ANEXO\s(IX|IV|V|VI|I|II|III)[.-]*\s+[^\n]+)\n/mi
 
       [re1, re2, re3, re4, re5].map do |re|
         toc = Toc.new
@@ -26,9 +26,7 @@ module SectionExtractor
           # Skip the TOC item if it has more than 5 dots
           next if toc_item_title.include?(".....")
 
-          if toc_item_title.include?(":")
-            toc_item_title = toc_item_title.split(":").first.strip
-          end
+          toc_item_title = toc_item_title.split(":").first.strip if toc_item_title.include?(":")
           toc.add_item(toc_item_title, content.rindex(match.first))
         end
 
@@ -51,7 +49,7 @@ module SectionExtractor
       end.flatten.map do |toc|
         calculate_titles(toc)
         # TODO, for the moment is not necessary
-        #cleanup_toc_items(toc)
+        # cleanup_toc_items(toc)
 
         toc
       end
@@ -64,7 +62,7 @@ module SectionExtractor
       toc_separator_chars.sort_by(&:size).reverse.each do |separator_char|
         new_toc = Toc.new
         new_toc.toc_separator_chars = separator_char
-        next if new_toc.toc_separator_chars.size == 0
+        next if new_toc.toc_separator_chars.empty?
 
         new_toc.toc_series_type = toc.toc_series_type
         toc.toc_items.each do |item|
@@ -83,15 +81,13 @@ module SectionExtractor
     def calculate_titles(toc)
       toc.toc_items.each do |item|
         item.title = item.raw_title.split(toc.toc_separator_chars).last&.strip
-        if item.title == item.raw_title
-          toc.toc_items.delete(item)
-        end
+        toc.toc_items.delete(item) if item.title == item.raw_title
       end
     end
 
     def detect_series_type(toc)
       random_items = toc.toc_items.sample(5)
-      types = random_items.map{ |item| detect_series_type_from_item(item) }
+      types = random_items.map { |item| detect_series_type_from_item(item) }
       # return the most common type
       types.max_by { |type| types.count(type) }
     end
@@ -107,7 +103,7 @@ module SectionExtractor
       puts " - Cleaning up TOC items"
       puts " - Toc separator chars: #{toc.toc_separator_chars}"
 
-      toc.toc_items.each_with_index do |item, i|
+      toc.toc_items.each_with_index do |item, _i|
         if item.title !~ /\A#{next_series_item_should_be}\s*#{Regexp.quote(toc_separator_chars)}/
           puts "- Skipping #{item.title}, should be #{next_series_item_should_be}#{toc_separator_chars}"
           next
@@ -149,15 +145,15 @@ module SectionExtractor
     end
 
     def detect_numeric_series_separator_chars(item)
-      item.title.match(/\d{1,3}([^\s]+)\s/) ? $1 : nil
+      item.title.match(/\d{1,3}([^\s]+)\s/) ? ::Regexp.last_match(1) : nil
     end
 
     def detect_roman_series_separator_chars(item)
-      item.title.match(/\b(IX|IV|V|VI|I|II|III)\b([^\s]+)\s/) ? $2 : nil
+      item.title.match(/\b(IX|IV|V|VI|I|II|III)\b([^\s]+)\s/) ? ::Regexp.last_match(2) : nil
     end
 
     def detect_alpha_series_separator_chars(item)
-      item.title.match(/([a-zA-Z])([^\s]+)\s/) ? $2 : nil
+      item.title.match(/([a-zA-Z])([^\s]+)\s/) ? ::Regexp.last_match(2) : nil
     end
 
     def expected_next_series_item(current_item)
