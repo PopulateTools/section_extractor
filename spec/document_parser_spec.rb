@@ -90,4 +90,21 @@ RSpec.describe SectionExtractor::DocumentParser do
       end
     end
   end
+
+  context "in 79682161 doc" do
+    let(:file_path) { "spec/files/79682161.txt" }
+
+    it "has these sections" do
+      [
+        ["ANEXO II CONDICIONES ESPECIALES DE EJECUCIÓN.", "acuerdo con el artículo 202.1 LCSP"],
+        ["3. Derechos y obligaciones de las partes.", "3.1. Abonos al contratista"]
+      ].each do |expected_section|
+        binding.pry
+        expect(document.sections.any? do |section|
+          section.raw_title.include?(expected_section[0]) &&
+            section.content.include?(expected_section[1])
+        end).to be(true), lambda { "Expected section '#{expected_section[0]}' OR #{expected_section[1]} to be present" }
+      end
+    end
+  end
 end
