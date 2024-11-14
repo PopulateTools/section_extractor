@@ -18,7 +18,7 @@ RSpec.describe SectionExtractor::DocumentParser do
         expect(document.sections.any? do |section|
           section.raw_title.include?(expected_section[0]) &&
             section.content.include?(expected_section[1])
-        end).to be(true), lambda { "Expected section '#{expected_section[0]}' OR #{expected_section[1]} to be present" }
+        end).to be(true), -> { "Expected section '#{expected_section[0]}' OR #{expected_section[1]} to be present" }
       end
     end
   end
@@ -36,7 +36,7 @@ RSpec.describe SectionExtractor::DocumentParser do
         expect(document.sections.any? do |section|
           section.raw_title.include?(expected_section[0]) &&
             section.content.include?(expected_section[1])
-        end).to be(true), lambda { "Expected section '#{expected_section[0]}' OR #{expected_section[1]} to be present" }
+        end).to be(true), -> { "Expected section '#{expected_section[0]}' OR #{expected_section[1]} to be present" }
       end
     end
   end
@@ -46,14 +46,15 @@ RSpec.describe SectionExtractor::DocumentParser do
 
     it "has these sections" do
       [
-        ["2. PROCEDIMIENTO DE SELECCIÓN Y ADJUDICACIÓN", "-La forma de adjudicación del contrato será el procedimiento abierto ordinario"],
+        ["2. PROCEDIMIENTO DE SELECCIÓN Y ADJUDICACIÓN",
+         "-La forma de adjudicación del contrato será el procedimiento abierto ordinario"],
         ["1.4. No división en lotes del objeto del contrato", "-El objeto del contrato no se divide en lotes"],
         ["3. Solvencia del empresario", "La solvencia económica y financiera del"]
       ].each do |expected_section|
         expect(document.sections.any? do |section|
           section.raw_title.include?(expected_section[0]) &&
             section.content.include?(expected_section[1])
-        end).to be(true), lambda { "Expected section '#{expected_section[0]}' OR #{expected_section[1]} to be present" }
+        end).to be(true), -> { "Expected section '#{expected_section[0]}' OR #{expected_section[1]} to be present" }
       end
     end
   end
@@ -64,13 +65,15 @@ RSpec.describe SectionExtractor::DocumentParser do
     it "has these sections" do
       [
         ["19.1 GARANTÍA DEFINITIVA", "20.747,79 euros."],
-        ["17. CRITERIOS DE VALORACIÓN DE LAS OFERTAS", "Justificación: se ha seleccionado como criterio de adjudicación"],
-        ["14. CONDICIONES ESPECIALES DE EJECUCIÓN", "Condiciones especiales de ejecución del contrato de carácter medioambiental."]
+        ["17. CRITERIOS DE VALORACIÓN DE LAS OFERTAS",
+         "Justificación: se ha seleccionado como criterio de adjudicación"],
+        ["14. CONDICIONES ESPECIALES DE EJECUCIÓN",
+         "Condiciones especiales de ejecución del contrato de carácter medioambiental."]
       ].each do |expected_section|
         expect(document.sections.any? do |section|
           section.raw_title.include?(expected_section[0]) &&
             section.content.include?(expected_section[1])
-        end).to be(true), lambda { "Expected section '#{expected_section[0]}' OR #{expected_section[1]} to be present" }
+        end).to be(true), -> { "Expected section '#{expected_section[0]}' OR #{expected_section[1]} to be present" }
       end
     end
   end
@@ -86,7 +89,7 @@ RSpec.describe SectionExtractor::DocumentParser do
         expect(document.sections.any? do |section|
           section.raw_title.include?(expected_section[0]) &&
             section.content.include?(expected_section[1])
-        end).to be(true), lambda { "Expected section '#{expected_section[0]}' OR #{expected_section[1]} to be present" }
+        end).to be(true), -> { "Expected section '#{expected_section[0]}' OR #{expected_section[1]} to be present" }
       end
     end
   end
@@ -96,14 +99,13 @@ RSpec.describe SectionExtractor::DocumentParser do
 
     it "has these sections" do
       [
-        ["ANEXO II CONDICIONES ESPECIALES DE EJECUCIÓN.", "acuerdo con el artículo 202.1 LCSP"],
-        ["3. Derechos y obligaciones de las partes.", "3.1. Abonos al contratista"]
+        ["1. Garantía Provisional", "No se exige conforme a lo establecido"],
+        ["K. CONDICIONES ESPECIALES DE EJECUCIÓN DEL CONTRATO", "De acuerdo con el art. 202.1"]
       ].each do |expected_section|
-        binding.pry
         expect(document.sections.any? do |section|
           section.raw_title.include?(expected_section[0]) &&
             section.content.include?(expected_section[1])
-        end).to be(true), lambda { "Expected section '#{expected_section[0]}' OR #{expected_section[1]} to be present" }
+        end).to be(true), -> { "Expected section '#{expected_section[0]}' OR #{expected_section[1]} to be present" }
       end
     end
   end
