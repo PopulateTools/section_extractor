@@ -117,4 +117,19 @@ RSpec.describe SectionExtractor::DocumentParser do
       end
     end
   end
+
+  context "in 61678210 doc" do
+    let(:file_path) { "spec/files/61678210.txt" }
+
+    it "has these sections" do
+      [
+        ["1. OBJETO", "El presente procedimiento tiene por objeto"],
+        ["7. PRESUPUESTO BASE DE LICITACIÓN, VALOR ESTIMADO DEL CONTRATO Y", "El presupuesto base de licitación se indica en el punto 6.1 de la Carátula."]
+      ].each do |expected_section|
+        binding.pry        expect(document.sections.any? do |section|
+          section.raw_title.include?(expected_section[0]) #&& section.content.include?(expected_section[1])
+        end).to be(true), -> { "Expected section '#{expected_section[0]}' OR #{expected_section[1]} to be present" }
+      end
+    end
+  end
 end
