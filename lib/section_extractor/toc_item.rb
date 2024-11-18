@@ -10,5 +10,9 @@ module SectionExtractor
       @title = title&.strip
       @position = position
     end
+
+    def inspect
+      "#<TocItem raw_title: #{@raw_title}>"
+    end
   end
 end
