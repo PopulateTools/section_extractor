@@ -20,7 +20,9 @@ module SectionExtractor
     end
 
     def inspect
-      "#<Section title: #{@raw_title}, content: #{@content.slice(0, 50)}>"
+      # Restore
+      # "#<Section title: #{@raw_title}, content: #{@content.slice(0, 50)}>"
+      "#<Section title: #{@raw_title}>"
     end
 
     def full_content
