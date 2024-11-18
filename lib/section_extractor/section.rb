@@ -22,7 +22,7 @@ module SectionExtractor
     def inspect
       # Restore
       # "#<Section title: #{@raw_title}, content: #{@content.slice(0, 50)}>"
-      "#<Section title: #{@raw_title}>"
+      "#<Section title: #{@raw_title} positions: #{@positions}>"
     end
 
     def full_content

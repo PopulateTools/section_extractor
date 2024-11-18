@@ -25,7 +25,7 @@ module SectionExtractor
 
         0.upto(toc.toc_items.size - 1) do |index|
           section = Section.new(content, toc.toc_items[index], toc.toc_items[index + 1])
-          sections << section
+          sections << section unless sections.find{ |s| s.raw_title == section.raw_title && s.positions&.first == section.positions&.first }
           # TODO: review
           # Skip empty sections, because they are not real sections, but just sentences that start with
           # toc item title format
@@ -39,7 +39,7 @@ module SectionExtractor
         puts "- Skipping #{toc_items_to_skip.join(", ")} empty sections" if toc_items_to_skip.any?
         toc_items_to_skip.each { |index| toc.toc_items.delete_at(index) }
       end
-      sections
+      sections.sort_by{ |s| s.positions.first }
     end
 
     def extract_tocs(content)
