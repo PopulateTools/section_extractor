@@ -17,16 +17,17 @@ module SectionExtractor
 
     private
 
-    def extract_sections(content, tocs)
+    def extract_sections(content, tocs) # rubocop:disable Metrics/AbcSize
       sections = []
 
       tocs.each do |toc|
-        toc_items_to_skip = []
+        # toc_items_to_skip = []
 
         0.upto(toc.toc_items.size - 1) do |index|
           section = Section.new(content, toc.toc_items[index], toc.toc_items[index + 1])
-          sections << section unless sections.find{ |s| s.raw_title == section.raw_title && s.positions&.first == section.positions&.first }
-          # TODO: review
+          sections << section unless section_exists?(sections, section)
+
+          # TODO: re-activate when we use the content again
           # Skip empty sections, because they are not real sections, but just sentences that start with
           # toc item title format
           # if section.content.empty?
@@ -36,14 +37,20 @@ module SectionExtractor
           # end
         end
 
-        puts "- Skipping #{toc_items_to_skip.join(", ")} empty sections" if toc_items_to_skip.any?
-        toc_items_to_skip.each { |index| toc.toc_items.delete_at(index) }
+        # TODO: re-activate when we use the content again
+        # puts "- Skipping #{toc_items_to_skip.join(", ")} empty sections" if toc_items_to_skip.any?
+        # toc_items_to_skip.each { |index| toc.toc_items.delete_at(index) }
       end
-      sections.sort_by{ |s| s.positions.first }
+
+      sections.sort_by { |s| s.positions.first }
     end
 
     def extract_tocs(content)
       SectionExtractor::TocParser.new(content).call
+    end
+
+    def section_exists?(sections, section)
+      sections.find { |s| s.raw_title == section.raw_title && s.positions&.first == section.positions&.first }
     end
   end
 end
