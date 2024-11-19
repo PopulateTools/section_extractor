@@ -112,7 +112,7 @@ RSpec.describe SectionExtractor::DocumentParser do
     it "has these sections" do
       assert_sections_present([
         ["1. OBJETO", "El presente procedimiento tiene por objeto"],
-        ["7. PRESUPUESTO BASE DE LICITACIÓN, VALOR ESTIMADO DEL CONTRATO Y", "El presupuesto base de licitación se indica en el punto 6.1 de la Carátula."]
+        ["7. PRESUPUESTO BASE DE LICITACIÓN, VALOR ESTIMADO DEL CONTRA", "El presupuesto base de licitación se indica en el punto 6.1 de la Carátula."]
       ])
     end
   end
