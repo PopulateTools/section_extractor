@@ -14,24 +14,23 @@ module SectionExtractor
 
     def call
       tocs = []
-      # TODO: delete me
-      # re1 = /\n(\d{1,3}[.-][.-]?\s+[^\n]+)\n/mi
-      re2 = /\n((IX|IV|V|VI|I|II|III)([.-]+\s+[^\n]+))\n/m
-      re3 = /\n^([a-zA-Z][).-]+\s+[^\n]+)\n/m
-      re4 = /^(\d+[.\d+]*\.?\-?\s.*)/
-      re5 = /\n(ANEXO\s(IX|IV|V|VI|VII|VIII|I|II|III)[.-]*\s+[^\n]+)\n/mi
-      re6 = /\n(CAPITULO\s(IX|IV|V|VI|VII|VIII|I|II|III|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX)[.-]*\s+[^\n]+)\n/mi
-      re7 = /\n(CAPÍTULO\s(IX|IV|V|VI|VII|VIII|I|II|III|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX)[.-]*\s+[^\n]+)\n/mi
+      re_numeric = /\n(\d+(?:\.\d+)*\.?\-?\s+[^\n]+)\n/m
+      re_roman = /\n((?:IX|IV|V?I{1,3}|VI{1,3})\.?\-?\s+[^\n]+)\n/m
+      re_alpha = /\n([a-zA-Z][\).-]+\s+[^\n]+)\n/m
+      re_special = /\n((?:ANEXO|CAPITULO|CAPÍTULO)\s+(?:IX|IV|V?I{1,3}|VI{1,3}|X{1,3}V?I{0,3})[.-]*\s+[^\n]+)\n/mi
 
-      [re2, re3, re4, re5].map do |re|
+      [re_numeric, re_roman, re_alpha, re_special].map do |re|
         toc = Toc.new
         content.scan(re).each do |match|
           toc_item_title = match.first.strip.gsub(/\n/, "").gsub(/\s+/, " ")
-          # Skip the TOC item if it has more than 5 dots
-          next if toc_item_title.include?(".....")
-          next if toc_item_title.size > MAX_TOC_ITEM_SIZE
-
           toc_item_title = toc_item_title.split(":").first.strip if toc_item_title.include?(":")
+          # Skip the TOC item if it has more than 5 dots
+          # (this happens in the docs with a TOC)
+          next if toc_item_title.include?(".....")
+          if toc_item_title.size > MAX_TOC_ITEM_SIZE
+            toc_item_title = toc_item_title.slice(0, MAX_TOC_ITEM_SIZE)
+          end
+
           puts " - Adding TOC item: #{toc_item_title}"
           toc.add_item(toc_item_title, content.rindex(match.first))
         end
@@ -89,7 +88,7 @@ module SectionExtractor
         item.title = item.raw_title.split(toc.toc_separator_chars).last&.strip
         control = item.raw_title.split(toc.toc_separator_chars).first
         toc.toc_items.delete(item) if control.size > 10
-        toc.toc_items.delete(item) if toc.toc_separator_chars.size > 5
+        toc.toc_items.delete(item) if toc.toc_separator_chars.nil? || toc.toc_separator_chars.size > 5
         case toc.toc_series_type
         when :numeric
           if control !~ /\A\d+/
