@@ -4,7 +4,7 @@ module SectionExtractor
   class TocParser
     ROMAN_SERIES = %w[I II III IV V VI VII VIII IX X XI XII XIII XIV XV].freeze
     ALPHA_SERIES = ("a".."z").to_a
-    MAX_TOC_ITEM_SIZE = 70
+    MAX_TOC_ITEM_SIZE = 60
     RE_NUMERIC = /\n(\d+(?:\.\d+)*\.?\-?\s+[^\n]+)\n/m
     RE_ROMAN = /\n((?:IX|IV|V?I{1,3}|VI{1,3})\.?\-?\s+[^\n]+)\n/m
     RE_ALPHA = /\n([a-zA-Z][\).-]+\s+[^\n]+)\n/m
@@ -29,8 +29,8 @@ module SectionExtractor
 
           toc_item_title = toc_item_title.slice(0, MAX_TOC_ITEM_SIZE) if toc_item_title.size > MAX_TOC_ITEM_SIZE
 
-          # puts " - Adding TOC item: #{toc_item_title}"
-          toc.add_item(toc_item_title, content.rindex(match.first))
+          puts " - Adding TOC item: #{toc_item_title}"
+          toc.add_item(toc_item_title, content.rindex(toc_item_title) || content.rindex(match.first))
         end
 
         tocs << toc if toc.toc_items.any?
