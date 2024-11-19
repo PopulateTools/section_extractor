@@ -129,4 +129,19 @@ RSpec.describe SectionExtractor::DocumentParser do
       ])
     end
   end
+
+  context "in 66067386 doc" do
+    let(:file_path) { "spec/files/66067442.txt" }
+
+    it "has these sections" do
+      binding.pry
+      assert_sections_present([
+        ["TÍTULO I. DISPOSICIONES GENERALES", ""],
+        ["Cláusula 1 Régimen jurídico.", ""],
+        ["Cláusula 22 Medios electrónicos", ""],
+        ["Cláusula 7 Condiciones especiales de ejecución.", ""],
+        ["I. Régimen jurídico", ""],
+      ])
+    end
+  end
 end
