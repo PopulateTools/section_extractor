@@ -46,7 +46,8 @@ module SectionExtractor
     end
 
     def extract_tocs(content)
-      SectionExtractor::TocParser.new(content).call
+      all_tocs = SectionExtractor::TocParser.new(content).call
+      all_tocs.values.map(&:values).flatten
     end
 
     def section_exists?(sections, section)
