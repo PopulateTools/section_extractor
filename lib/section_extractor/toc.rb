@@ -28,6 +28,8 @@ module SectionExtractor
       when :numeric
         match = toc_item.raw_title.match(/^(\d+)/)
         match.size > 0 && match[1].to_i <= MAX_NUMERIC_TOC_ITEM
+      else
+        true
       end
     end
   end
