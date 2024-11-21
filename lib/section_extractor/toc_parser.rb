@@ -2,21 +2,7 @@
 
 module SectionExtractor
   class TocParser
-    ROMAN_SERIES = %w[I II III IV V VI VII VIII IX X XI XII XIII XIV XV].freeze
-    ALPHA_SERIES = ("a".."z").to_a
     MAX_TOC_ITEM_SIZE = 60
-    RE_NUMERIC = /\n(\d+(?:\.\d+)*\.?-?\s+[^\n]+)\n/m
-    RE_NUMERIC_WITH_CLAUSE = /\n((?:Cláusula\s+)(\d+(?:\.\d+)*\.?-?\s+[^\n]+))\n/m
-    RE_ROMAN = /\n((?:IX|IV|V?I{1,3}|VI{1,3}|X{1,3}V?I{0,3})\s?\.?-?\s+[^\n]+)\n/mi
-    RE_ROMAN_WITH_TITLE = /\n((?:ANEXO|CAPITULO|CAPÍTULO|TÍTULO|TITULO)\s+(?:IX|IV|V?I{1,3}|VI{1,3}|X{1,3}V?I{0,3})[.-]*\s+[^\n]+)\n/mi
-    RE_ALPHA = /\n([a-zA-Z][).-]+\s+[^\n]+)\n/m
-    REGEXES_WITH_TYPES = {
-      numeric: RE_NUMERIC,
-      numeric_with_clause: RE_NUMERIC_WITH_CLAUSE,
-      roman: RE_ROMAN,
-      roman_with_title: RE_ROMAN_WITH_TITLE,
-      alpha: RE_ALPHA
-    }
 
     attr_reader :content, :tocs
 
@@ -26,8 +12,8 @@ module SectionExtractor
     end
 
     def call
-      REGEXES_WITH_TYPES.map do |type, re|
-        content.scan(re).each do |match|
+      TocTypes.all.map do |type, options|
+        content.scan(options[:regexp]).each do |match|
           toc_item_title = match.first.strip.gsub(/\n/, "").gsub(/\s+/, " ")
           toc_item_title = toc_item_title.split(":").first.strip if toc_item_title.include?(":")
           # Skip the TOC item if it has more than 5 dots
