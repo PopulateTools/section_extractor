@@ -4,7 +4,7 @@ module SectionExtractor
   class Toc
     attr_accessor :toc_series_type, :toc_separator_chars, :toc_items
 
-    MAX_NUMERIC_TOC_ITEM = 1000
+    MAX_NUMERIC_TOC_ITEM = 70
 
     def initialize(toc_series_type, toc_separator_chars)
       @toc_items = []
