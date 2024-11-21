@@ -23,13 +23,13 @@ module SectionExtractor
           toc_item_title = toc_item_title.slice(0, MAX_TOC_ITEM_SIZE) if toc_item_title.size > MAX_TOC_ITEM_SIZE
           separator_char = detect_separator_chars(toc_item_title, type)
           if separator_char.nil?
-            puts " - Skipping #{toc_item_title} because separator_char is nil (type: #{type})"
+            puts " - Skipping #{toc_item_title} because separator_char is nil (type: #{type})" if ENV["DEBUG"]
             next
           end
 
           tocs[type] ||= {}
           tocs[type][separator_char] ||= Toc.new(type, separator_char)
-          puts " - Adding TOC item: #{toc_item_title}"
+          puts " - Adding TOC item: #{toc_item_title}" if ENV["DEBUG"]
           tocs[type][separator_char].add_item(
             toc_item_title, content.rindex(toc_item_title) || content.rindex(match.first)
           )
