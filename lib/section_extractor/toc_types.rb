@@ -2,11 +2,11 @@
 
 module SectionExtractor
   class TocTypes
-    RE_NUMERIC = /\n(\d+(?:\.\d+)*\.?-?\s+[^\n]+)\n/m
-    RE_NUMERIC_WITH_CLAUSE = /\n((?:Cláusula\s+)(\d+(?:\.\d+)*\.?-?\s+[^\n]+))\n/m
-    RE_ROMAN = /\n((?:IX|IV|V?I{1,3}|VI{1,3}|X{1,3}V?I{0,3})\s?\.?-?\s+[^\n]+)\n/mi
-    RE_ROMAN_WITH_TITLE = /\n((?:ANEXO|CAPITULO|CAPÍTULO|TÍTULO|TITULO)\s+(?:IX|IV|V?I{1,3}|VI{1,3}|X{1,3}V?I{0,3})[.-]*\s+[^\n]+)\n/mi
-    RE_ALPHA = /\n([a-zA-Z][).-]+\s+[^\n]+)\n/m
+    RE_NUMERIC = /^\n*\s*(\d+(?:\.\d+)*\.?-?\s+[A-Za-z][^\n]+)\n/m
+    RE_NUMERIC_WITH_CLAUSE = /^\n*\s*((?:Cláusula\s+)(\d+(?:\.\d+)*\.?-?\s+[^\n]+))\n/m
+    RE_ROMAN = /^\n*\s*((?:IX|IV|V?I{1,3}|VI{1,3}|X{1,3}V?I{0,3})\s?\.?-?\s+[^\n]+)\n/mi
+    RE_ROMAN_WITH_TITLE = /^\n*\s*((?:ANEXO|CAPITULO|CAPÍTULO|TÍTULO|TITULO)\s+(?:IX|IV|V?I{1,3}|VI{1,3}|X{1,3}V?I{0,3})[.-]*\s+[^\n]+)\n/mi
+    RE_ALPHA = /^\n*\s*([a-zA-Z][).-]+\s+[^\n]+)\n/m
 
     def self.all
       {
