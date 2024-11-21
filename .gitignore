@@ -12,3 +12,6 @@
 
 # ruby version
 .ruby-version
+
+# Rbenv vars
+.rbenv-vars
