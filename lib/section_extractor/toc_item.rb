@@ -12,7 +12,7 @@ module SectionExtractor
     end
 
     def inspect
-      "#<TocItem raw_title: #{@raw_title}>"
+      "#<TocItem raw_title: \"#{raw_title}\" - position: #{position}>"
     end
   end
 end
